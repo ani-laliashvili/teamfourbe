@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EVOptimizationAPI", "EVOpti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreLibrary", "..\CoreLibrary\CoreLibrary\CoreLibrary.csproj", "{553AD9EF-9A3B-4D4D-BBB7-27241269AA25}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EVOptimization", "..\EVOptimization\EVOptimization\EVOptimization.csproj", "{0563B597-79FC-4725-BF2B-05743500C1D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{553AD9EF-9A3B-4D4D-BBB7-27241269AA25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{553AD9EF-9A3B-4D4D-BBB7-27241269AA25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{553AD9EF-9A3B-4D4D-BBB7-27241269AA25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0563B597-79FC-4725-BF2B-05743500C1D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0563B597-79FC-4725-BF2B-05743500C1D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0563B597-79FC-4725-BF2B-05743500C1D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0563B597-79FC-4725-BF2B-05743500C1D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
