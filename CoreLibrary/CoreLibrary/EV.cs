@@ -4,7 +4,7 @@ namespace CoreLibrary
 {
     public class EV
     {
-        // Current charge of the EV in percentage (0 to 100)
+        // Current charge of the EV in kwh
         public double CurrentCharge { get; private set; }
         public int Id { get; set; }  // EV Identifier
         public int HouseholdId { get; set; }  // ID of the household that owns the EV
@@ -132,9 +132,9 @@ namespace CoreLibrary
         }
 
         // Optional: Method to return the current charge
-        public string GetCurrentCharge()
+        public double GetCurrentChargeInPercentage()
         {
-            return CurrentCharge.ToString();
+            return (CurrentCharge * 100 / BatteryCapacity);
         }
 
         // Method to return the status of running essential appliances
