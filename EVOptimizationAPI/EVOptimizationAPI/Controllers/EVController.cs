@@ -2,6 +2,7 @@ using CoreLibrary;
 using EVOptimizationAPI.Dtos;
 using EVOptimizationAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace EVOptimizationAPI.Controllers
 {
@@ -21,7 +22,18 @@ namespace EVOptimizationAPI.Controllers
         {
             try
             {
-                return Ok(_evService.GetEVById(id));
+                var ev = _evService.GetEVById(id);
+                var isRunningEssentialAppliances = _evService.IsRunningEssentialAppliances(id);
+                var isRunningAllAppliances = _evService.IsRunningAllAppliances(id);
+
+                var evStatus = new EVStatusDto
+                {
+                    CurrentCharge = ev.CurrentCharge,
+                    IsRunningEssentialAppliances = isRunningEssentialAppliances,
+                    IsRunningAllAppliances = isRunningAllAppliances
+                };
+
+                return Ok(evStatus);
             }
             catch (KeyNotFoundException)
             {
@@ -37,12 +49,28 @@ namespace EVOptimizationAPI.Controllers
             return Ok($"EV {id} charged by {amount}%. Current charge: {_evService.GetEVById(id).GetCurrentCharge()}%");
         }
 
-        // POST: api/ev/discharge
-        [HttpPost("discharge/{id}")]
-        public IActionResult DischargeEV(int id, [FromBody] double amount)
+        // POST: api/ev/run-essential-appliances
+        [HttpPost("run-essential-appliances/{id}")]
+        public IActionResult RunEssentialAppliances(int id, [FromBody] double amount)
         {
-            _evService.DischargeEV(id, amount);
-            return Ok($"EV {id} discharged by {amount}%. Current charge: {_evService.GetEVById(id).GetCurrentCharge()}%");
+            _evService.RunEssentialAppliances(id, amount);
+            return Ok($"Running essential appliances for EV {id}. Current charge: {_evService.GetEVById(id).GetCurrentCharge()}%");
+        }
+
+        // POST: api/ev/run-all-appliances
+        [HttpPost("run-all-appliances/{id}")]
+        public IActionResult RunAllAppliances(int id, [FromBody] double amount)
+        {
+            _evService.RunAllAppliances(id, amount);
+            return Ok($"Running all appliances for EV {id}. Current charge: {_evService.GetEVById(id).GetCurrentCharge()}%");
+        }
+
+        // POST: api/ev/stop-appliances
+        [HttpPost("stop-appliances/{id}")]
+        public IActionResult StopAppliances(int id)
+        {
+            _evService.StopRunningAppliances(id);
+            return Ok($"Appliances stopped for EV {id}.");
         }
 
         // POST: api/ev/stop
@@ -58,14 +86,6 @@ namespace EVOptimizationAPI.Controllers
         public async Task<IActionResult> ChargeOverTime(int id, [FromBody] ChargeOverTimeDto request)
         {
             var result = await _evService.ChargeOverTime(id, request.TotalChargeAmount, request.ChargeRatePerSecond, request.TimeIntervalInSeconds);
-            return Ok(result);
-        }
-
-        // POST: api/ev/dischargeovertime
-        [HttpPost("dischargeovertime/{id}")]
-        public async Task<IActionResult> DischargeOverTime(int id, [FromBody] DischargeOverTimeDto request)
-        {
-            var result = await _evService.DischargeOverTime(id, request.TotalDischargeAmount, request.DischargeRatePerSecond, request.TimeIntervalInSeconds);
             return Ok(result);
         }
     }

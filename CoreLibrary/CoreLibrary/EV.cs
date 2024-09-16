@@ -8,9 +8,10 @@ namespace CoreLibrary
         public double CurrentCharge { get; private set; }
         private readonly double consumptionRatePerMile;
 
-        // Flags to track if charging or discharging is active
+        // Flags to track if charging or appliance running status is active
         private bool isCharging;
-        private bool isDischarging;
+        private bool isRunningEssentialAppliances;
+        private bool isRunningAllAppliances;
 
         // Constructor to initialize the current charge and consumption rate
         public EV(double initialCharge, double consumptionRatePerMile)
@@ -28,7 +29,8 @@ namespace CoreLibrary
             CurrentCharge = initialCharge;
             this.consumptionRatePerMile = consumptionRatePerMile;
             isCharging = false;
-            isDischarging = false;
+            isRunningEssentialAppliances = false;
+            isRunningAllAppliances = false;
         }
 
         // Method to charge the EV, increments the charge by the given amount
@@ -47,14 +49,15 @@ namespace CoreLibrary
             }
         }
 
-        // Method to discharge the EV, decreases the charge by the given amount
-        public void Discharge(double amount)
+        // Method to run essential appliances, decreases the charge over time
+        public void RunEssentialAppliances(double amount)
         {
             if (amount < 0)
             {
-                throw new ArgumentException("Discharge amount cannot be negative.");
+                throw new ArgumentException("Consumption amount cannot be negative.");
             }
 
+            isRunningEssentialAppliances = true;
             CurrentCharge -= amount;
 
             if (CurrentCharge < 0)
@@ -63,22 +66,41 @@ namespace CoreLibrary
             }
         }
 
-        // Override method to stop the current operation (charging or discharging)
-        public void StopCurrentOperation()
+        // Method to run all appliances, decreases the charge over time
+        public void RunAllAppliances(double amount)
         {
-            if (isCharging)
+            if (amount < 0)
             {
-                isCharging = false;
-                Console.WriteLine("Charging operation stopped.");
+                throw new ArgumentException("Consumption amount cannot be negative.");
             }
-            else if (isDischarging)
+
+            isRunningAllAppliances = true;
+            CurrentCharge -= amount;
+
+            if (CurrentCharge < 0)
             {
-                isDischarging = false;
-                Console.WriteLine("Discharging operation stopped.");
+                CurrentCharge = 0; // Ensures the charge does not go below 0%
             }
-            else
+        }
+
+        // Method to stop running appliances
+        public void StopRunningAppliances()
+        {
+            if (isRunningEssentialAppliances)
             {
-                Console.WriteLine("No operation to stop.");
+                isRunningEssentialAppliances = false;
+                Console.WriteLine("Stopped running essential appliances.");
+            }
+
+            if (isRunningAllAppliances)
+            {
+                isRunningAllAppliances = false;
+                Console.WriteLine("Stopped running all appliances.");
+            }
+
+            if (!isRunningEssentialAppliances && !isRunningAllAppliances)
+            {
+                Console.WriteLine("No appliances are running.");
             }
         }
 
@@ -99,7 +121,7 @@ namespace CoreLibrary
                 return $"You ran out of charge after driving {possibleDistance:F2} km.";
             }
 
-            Discharge(totalConsumption);
+            CurrentCharge -= totalConsumption;
             return $"You drove {distanceInKm:F2} km. Remaining charge: {CurrentCharge:F2}%.";
         }
 
@@ -107,6 +129,18 @@ namespace CoreLibrary
         public string GetCurrentCharge()
         {
             return CurrentCharge.ToString();
+        }
+
+        // Method to return the status of running essential appliances
+        public bool IsRunningEssentialAppliances()
+        {
+            return isRunningEssentialAppliances;
+        }
+
+        // Method to return the status of running all appliances
+        public bool IsRunningAllAppliances()
+        {
+            return isRunningAllAppliances;
         }
     }
 }

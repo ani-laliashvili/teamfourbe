@@ -9,7 +9,6 @@ namespace EVOptimizationAPI.Services
         // A simple in-memory dictionary to store EV objects, using an auto-incrementing ID
         private readonly Dictionary<int, EV> _evs = new Dictionary<int, EV>();
         private readonly Dictionary<int, bool> _isCharging = new Dictionary<int, bool>();
-        private readonly Dictionary<int, bool> _isDischarging = new Dictionary<int, bool>();
         private int _nextId = 1;
 
         public EV GetEVById(int id)
@@ -25,8 +24,7 @@ namespace EVOptimizationAPI.Services
         public void AddEV(EV ev)
         {
             _evs[_nextId] = ev;  // Add the EV object to the dictionary
-            _isCharging[_nextId] = false; // Initialize charging and discharging status
-            _isDischarging[_nextId] = false;
+            _isCharging[_nextId] = false; // Initialize charging status
             _nextId++;           // Increment the ID for the next EV
         }
 
@@ -37,14 +35,28 @@ namespace EVOptimizationAPI.Services
             ev.Charge(amount);
         }
 
-        // Method to discharge the EV by a specified amount
-        public void DischargeEV(int id, double amount)
+        // Method to run essential appliances for an EV
+        public void RunEssentialAppliances(int id, double amount)
         {
             var ev = GetEVById(id);
-            ev.Discharge(amount);
+            ev.RunEssentialAppliances(amount);
         }
 
-        // Method to stop charging or discharging for an EV
+        // Method to run all appliances for an EV
+        public void RunAllAppliances(int id, double amount)
+        {
+            var ev = GetEVById(id);
+            ev.RunAllAppliances(amount);
+        }
+
+        // Method to stop running appliances for an EV
+        public void StopRunningAppliances(int id)
+        {
+            var ev = GetEVById(id);
+            ev.StopRunningAppliances();
+        }
+
+        // Method to stop charging or running appliances for an EV
         public void StopCurrentOperation(int id)
         {
             if (!_evs.ContainsKey(id)) throw new KeyNotFoundException("EV not found.");
@@ -55,11 +67,8 @@ namespace EVOptimizationAPI.Services
                 System.Console.WriteLine($"Charging operation for EV {id} stopped.");
             }
 
-            if (_isDischarging[id])
-            {
-                _isDischarging[id] = false;
-                System.Console.WriteLine($"Discharging operation for EV {id} stopped.");
-            }
+            var ev = GetEVById(id);
+            ev.StopRunningAppliances(); // Stop any appliance usage
         }
 
         // Method to charge the EV over time asynchronously
@@ -96,38 +105,18 @@ namespace EVOptimizationAPI.Services
             return status;
         }
 
-        // Method to discharge the EV over time asynchronously
-        public async Task<string> DischargeOverTime(int id, double totalDischargeAmount, double dischargeRatePerSecond, int timeIntervalInSeconds)
+        // Method to check if essential appliances are running
+        public bool IsRunningEssentialAppliances(int id)
         {
             var ev = GetEVById(id);
-            _isDischarging[id] = true;
-            double dischargeIncrement = dischargeRatePerSecond * timeIntervalInSeconds;
-            double dischargeToSubtract = 0;
-            string status = "";
+            return ev.IsRunningEssentialAppliances();
+        }
 
-            while (dischargeToSubtract < totalDischargeAmount && ev.CurrentCharge > 0 && _isDischarging[id])
-            {
-                await Task.Delay(timeIntervalInSeconds * 1000); // Wait for the specified interval
-                dischargeToSubtract += dischargeIncrement;
-                ev.Discharge(dischargeIncrement); // Subtract the incremental discharge
-
-                status = $"Discharging EV {id}... Current charge: {ev.CurrentCharge}%";
-
-                if (ev.CurrentCharge <= 0)
-                {
-                    status = $"EV {id} is fully discharged.";
-                    break;
-                }
-            }
-
-            _isDischarging[id] = false; // Discharging complete or stopped
-
-            if (ev.CurrentCharge > 0 && !_isDischarging[id])
-            {
-                status = $"Discharging stopped for EV {id}.";
-            }
-
-            return status;
+        // Method to check if all appliances are running
+        public bool IsRunningAllAppliances(int id)
+        {
+            var ev = GetEVById(id);
+            return ev.IsRunningAllAppliances();
         }
     }
 }
