@@ -1,29 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace CoreLibrary
 {
     public class Appliance
     {
+        public int Id { get; set; }
         public string Name { get; private set; }
-        public double ChargeReceived { get; private set; }
-        public double ChargeNeededToRun { get; private set; }
+        public double PowerConsumption { get; set; }
         public bool IsRunning { get; private set; }
 
         // Constructor to initialize the component with a name and charge needed to run
-        public Appliance(string name, double chargeNeededToRun)
+        public Appliance(int id, string name, double powerConsumption, bool isRunning)
         {
             Name = name;
-            ChargeReceived = 0;
-            ChargeNeededToRun = chargeNeededToRun;
+            Id = id;
+            PowerConsumption = powerConsumption;
             IsRunning = false;
         }
 
+        public static List<Appliance> CreateAppliances()
+        {
+            List<Appliance> appliances = new List<Appliance>
+            {
+                new(1, "Fridge", 0.2, true), // kW
+                new(2, "Lights", 0.1, true), // kW
+                new(3, "HVAC", 2.0, false)    // kW
+            };
+            return appliances;
+        }
+
+        // Function to calculate total appliance power for a household at time h
+        public static double GetTotalAppliancePower(Household household, List<Appliance> appliances, int h, int[] OutagePeriod)
+        {
+            bool isOutage = Array.Exists(OutagePeriod, hour => hour == h);
+
+            double totalPower = 0.0;
+
+            foreach (int applianceId in household.Appliances)
+            {
+                Appliance appliance = appliances.Find(a => a.Id == applianceId);
+                if (isOutage)
+                {
+                    // During outage, only essential appliances are on
+                    if (household.EssentialAppliances.Contains(applianceId))
+                    {
+                        totalPower += appliance.PowerConsumption;
+                    }
+                }
+                else
+                {
+                    totalPower += appliance.PowerConsumption;
+                }
+            }
+
+            return totalPower;
+        }
         // Method to receive charge from the EV
-        public string ReceiveCharge(double amount)
+        /*public string ReceiveCharge(double amount)
         {
             if (amount < 0)
             {
@@ -47,9 +80,9 @@ namespace CoreLibrary
                 IsRunning = false;
                 return $"Component {Name} cannot run. It needs {ChargeNeededToRun - ChargeReceived:F2}% more charge to start.";
             }
-        }
+        }*/
 
-        // Method to simulate the component using charge while running
+        /*// Method to simulate the component using charge while running
         public string UseChargeWhileRunning(double amount)
         {
             if (!IsRunning)
@@ -74,7 +107,7 @@ namespace CoreLibrary
                 ChargeReceived = 0;
                 return $"Component {Name} ran out of charge after using {usedCharge:F2}%. Component is now stopped.";
             }
-        }
+        }*/
 
         // Method to stop the component
         public string StopComponent()
@@ -90,7 +123,7 @@ namespace CoreLibrary
             }
         }
 
-        // Method to simulate running over time asynchronously
+        /*// Method to simulate running over time asynchronously
         public async Task<string> RunOverTime(double consumptionRatePerSecond, int timeIntervalInSeconds, double totalTimeInSeconds)
         {
             if (consumptionRatePerSecond < 0)
@@ -130,6 +163,6 @@ namespace CoreLibrary
             }
 
             return status;
-        }
+        }*/
     }    
 }

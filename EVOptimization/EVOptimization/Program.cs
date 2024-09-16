@@ -150,7 +150,7 @@ namespace EVOptimization
                 {
                     if (h == 0)
                     {
-                        solver.Add(SoC[(ev.Id, h)] == ev.SoCInitial * ev.BatteryCapacity + (P_charge[(ev.Id, h)] * Eff_charge - P_discharge[(ev.Id, h)] / Eff_discharge) * delta_t);
+                        solver.Add(SoC[(ev.Id, h)] == ev.SoCMin * ev.BatteryCapacity + (P_charge[(ev.Id, h)] * Eff_charge - P_discharge[(ev.Id, h)] / Eff_discharge) * delta_t);
                     }
                     else
                     {
