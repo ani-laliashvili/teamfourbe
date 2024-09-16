@@ -49,9 +49,9 @@ namespace CoreLibrary
 
             CurrentCharge += amount;
 
-            if (CurrentCharge > 100)
+            if (CurrentCharge > BatteryCapacity)
             {
-                CurrentCharge = 100; // Ensures the charge does not exceed 100%
+                CurrentCharge = BatteryCapacity; // Ensures the charge does not exceed 100%
             }
         }
 

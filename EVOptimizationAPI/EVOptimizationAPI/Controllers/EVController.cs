@@ -85,7 +85,7 @@ namespace EVOptimizationAPI.Controllers
         [HttpPost("chargeovertime/{id}")]
         public async Task<IActionResult> ChargeOverTime(int id, [FromBody] ChargeOverTimeDto request)
         {
-            var result = await _evService.ChargeOverTime(id, request.ChargerPowerKWh, request.TimeIntervalHours);
+            var result = await _evService.ChargeOverTime(id, request.ChargerPowerKWh, request.TimeIntervalHours, request.ChargeUntil);
             return Ok(result);
         }
     }
