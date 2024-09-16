@@ -72,39 +72,58 @@ namespace EVOptimizationAPI.Services
         }
 
         // Method to charge the EV over time asynchronously
-        public async Task<string> ChargeOverTime(int id, double ChargerPowerKWh, double timeIntervalInHours)
+        public async Task<string> ChargeOverTime(int id, double ChargerPowerKWh, double timeIntervalInHours, double? chargeUntil = null)
         {
+            if (timeIntervalInHours <= 0)
+                return "Invalid time interval";
+
             var ev = GetEVById(id);
+
+            // Set default `chargeUntil` to EV's BatteryCapacity if not specified
+            if (chargeUntil == null || chargeUntil > ev.BatteryCapacity)
+                chargeUntil = ev.BatteryCapacity;
+
             _isCharging[id] = true;
-            int timeIntervalInSeconds = (int)(timeIntervalInHours * 3600);
-            double chargeIncrement = ChargerPowerKWh * 3600 * timeIntervalInSeconds;
-            double chargeToAdd = 0;
+
+            // Charge increment is the power provided (in kWh) multiplied by the time interval
+            double chargeIncrement = ChargerPowerKWh * timeIntervalInHours;
             string status = "";
 
-            while (ev.CurrentCharge < ev.BatteryCapacity && _isCharging[id])
+            while (ev.CurrentCharge < chargeUntil && ev.CurrentCharge < ev.BatteryCapacity && _isCharging[id])
             {
-                await Task.Delay(timeIntervalInSeconds * 1000); // Wait for the specified interval
-                chargeToAdd += chargeIncrement;
-                ev.Charge(chargeIncrement); // Add the incremental charge
+                // Wait for the time interval before adding the next charge increment
+                await Task.Delay((int)(timeIntervalInHours * 3600 * 1000)); // Convert hours to milliseconds
 
-                status = $"Charging EV {id}... Current charge: {ev.GetCurrentChargeInPercentage()}%";
+                // Add the charge increment, but ensure it doesn't exceed the target charge or battery capacity
+                ev.Charge(Math.Min(chargeIncrement, chargeUntil.Value - ev.CurrentCharge));
 
+                // Update status
+                status = $"Charging EV {id}... Current charge: {ev.CurrentCharge} kWh";
+
+                // Stop charging if the EV reaches the target charge or battery capacity
                 if (ev.CurrentCharge >= ev.BatteryCapacity)
                 {
-                    status = $"EV {id} is fully charged.";
+                    status = $"EV {id} is fully charged at {ev.BatteryCapacity} kWh.";
+                    break;
+                }
+
+                if (ev.CurrentCharge >= chargeUntil)
+                {
+                    status = $"EV {id} reached the target charge of {chargeUntil} kWh.";
                     break;
                 }
             }
 
             _isCharging[id] = false; // Charging complete or stopped
 
-            if (ev.CurrentCharge < 100 && !_isCharging[id])
+            if (ev.CurrentCharge < ev.BatteryCapacity && !_isCharging[id])
             {
                 status = $"Charging stopped for EV {id}.";
             }
 
             return status;
         }
+
 
         // Method to check if essential appliances are running
         public bool IsRunningEssentialAppliances(int id)
