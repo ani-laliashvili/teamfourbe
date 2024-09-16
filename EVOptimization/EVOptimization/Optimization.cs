@@ -1,11 +1,13 @@
 using CoreLibrary;
 using Google.OrTools.LinearSolver;
+using static EVOptimization.OptimizationResults;
 
 namespace EVOptimization;
 
 public static class Optimization
 {
-    public static void SolveOptimization(Solver solver, int numTimeSlots, List<Household> households, List<EV> EVs, List<Appliance> appliances, double[] P_price, Outage outageInfo)
+    public static OptimizationResult SolveOptimization(Solver solver, int numTimeSlots, List<Household> households, List<EV> EVs,
+        List<Appliance> appliances, double[] P_price, Outage outageInfo)
     {
         // Battery degradation cost ($ per kWh)
         double DegCost = 0.05;
@@ -18,10 +20,9 @@ public static class Optimization
         double P_charge_max = 11.0; // Maximum charging power
         double P_discharge_max = 7.0; // Maximum discharging power
 
-        // Duration of each time slot (5 mins)
+        // Duration of each time slot (60 mins)
         double delta_t = 1.0;
 
-        // Outage period (e.g., hours 18 to 20)
         int outageStart = outageInfo.HoursFromNowStart;
         int outageEnd = outageInfo.HoursFromNowEnd;
         int[] OutagePeriod = new int[outageEnd - outageStart];
@@ -77,7 +78,8 @@ public static class Optimization
             {
                 P_charge[(ev.Id, h)] = solver.MakeNumVar(0, P_charge_max, $"P_charge_{ev.Id}_{h}");
                 P_discharge[(ev.Id, h)] = solver.MakeNumVar(0, P_discharge_max, $"P_discharge_{ev.Id}_{h}");
-                SoC[(ev.Id, h)] = solver.MakeNumVar(ev.SoCMin * ev.BatteryCapacity, ev.SoCMax * ev.BatteryCapacity, $"SoC_{ev.Id}_{h}");
+                SoC[(ev.Id, h)] = solver.MakeNumVar(ev.SoCMin * ev.BatteryCapacity, ev.SoCMax * ev.BatteryCapacity,
+                    $"SoC_{ev.Id}_{h}");
                 y[(ev.Id, h)] = solver.MakeIntVar(0, 1, $"y_{ev.Id}_{h}");
                 z[(ev.Id, h)] = solver.MakeIntVar(0, 1, $"z_{ev.Id}_{h}");
             }
@@ -121,11 +123,13 @@ public static class Optimization
             {
                 if (h == 0)
                 {
-                    solver.Add(SoC[(ev.Id, h)] == ev.SoCMin * ev.BatteryCapacity + (P_charge[(ev.Id, h)] * Eff_charge - P_discharge[(ev.Id, h)] / Eff_discharge) * delta_t);
+                    solver.Add(SoC[(ev.Id, h)] == ev.SoCMin * ev.BatteryCapacity +
+                        (P_charge[(ev.Id, h)] * Eff_charge - P_discharge[(ev.Id, h)] / Eff_discharge) * delta_t);
                 }
                 else
                 {
-                    solver.Add(SoC[(ev.Id, h)] == SoC[(ev.Id, h - 1)] + (P_charge[(ev.Id, h)] * Eff_charge - P_discharge[(ev.Id, h)] / Eff_discharge) * delta_t);
+                    solver.Add(SoC[(ev.Id, h)] == SoC[(ev.Id, h - 1)] +
+                        (P_charge[(ev.Id, h)] * Eff_charge - P_discharge[(ev.Id, h)] / Eff_discharge) * delta_t);
                 }
             }
         }
@@ -203,7 +207,7 @@ public static class Optimization
         // Objective function
         // Weights for the multi-objective optimization
         double alpha = 1.0; // Weight for total cost
-        double beta = 0.5;  // Weight for peak load (adjust as needed)
+        double beta = 0.5; // Weight for peak load (adjust as needed)
 
         Objective objective = solver.Objective();
 
@@ -233,35 +237,56 @@ public static class Optimization
         // Solve the model
         Solver.ResultStatus resultStatus = solver.Solve();
 
+        OptimizationResult optimizationResult = new OptimizationResult();
+        optimizationResult.EVResults = new List<EVResult>();
+        optimizationResult.CommunityLoadProfiles = new List<CommunityLoadProfile>();
+
         if (resultStatus == Solver.ResultStatus.OPTIMAL)
         {
-            Console.WriteLine("Optimal solution found!");
+            optimizationResult.TotalCost = solver.Objective().Value();
+            optimizationResult.PeakEVChargingLoad = P_peak.SolutionValue();
 
-            // Display results
-            Console.WriteLine($"\nTotal Cost: ${solver.Objective().Value():0.00}");
-            Console.WriteLine($"Peak EV Charging Load: {P_peak.SolutionValue():0.00} kW");
-
+            // Collect EV charging profiles
             foreach (EV ev in EVs)
             {
-                Console.WriteLine($"\nEV {ev.Id} (Household {ev.HouseholdId}):");
-                Console.WriteLine("Hour\tSoC (kWh)\tP_charge (kW)\tP_discharge (kW)");
+                EVResult evResult = new EVResult
+                {
+                    EVId = ev.Id,
+                    HouseholdId = ev.HouseholdId,
+                    ChargeProfiles = new List<EVChargeProfile>()
+                };
+
                 for (int h = 0; h < numTimeSlots; h++)
                 {
-                    Console.WriteLine($"{h}\t{SoC[(ev.Id, h)].SolutionValue():0.00}\t\t{P_charge[(ev.Id, h)].SolutionValue():0.00}\t\t{P_discharge[(ev.Id, h)].SolutionValue():0.00}");
+                    evResult.ChargeProfiles.Add(new EVChargeProfile
+                    {
+                        Hour = h,
+                        StateOfCharge = SoC[(ev.Id, h)].SolutionValue(),
+                        ChargePower = P_charge[(ev.Id, h)].SolutionValue(),
+                        DischargePower = P_discharge[(ev.Id, h)].SolutionValue()
+                    });
                 }
+
+                optimizationResult.EVResults.Add(evResult);
             }
 
-            // Display community EV charging load profile
-            Console.WriteLine("\nCommunity EV Charging Load Profile:");
-            Console.WriteLine("Hour\tP_EV (kW)");
+            // Collect community EV charging load profile
             for (int h = 0; h < numTimeSlots; h++)
             {
-                Console.WriteLine($"{h}\t{P_EV[h].SolutionValue():0.00}");
+                optimizationResult.CommunityLoadProfiles.Add(new CommunityLoadProfile
+                {
+                    Hour = h,
+                    EVChargingPower = P_EV[h].SolutionValue()
+                });
             }
         }
         else
         {
-            Console.WriteLine("No optimal solution found.");
+            // Handle the case where no optimal solution is found if necessary
+            throw new Exception("No optimal solution found.");
         }
+
+        return optimizationResult;
     }
+
 }
