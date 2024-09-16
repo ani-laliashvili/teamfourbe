@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EVOptimizationAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+706fb4b891e6d9a6090a028735a81f4ac5ce30dd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8f3f2ecbc0d31fbe01f9b503c5024beaef0741b1")]
 [assembly: System.Reflection.AssemblyProductAttribute("EVOptimizationAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EVOptimizationAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
