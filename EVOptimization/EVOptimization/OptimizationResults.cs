@@ -26,6 +26,11 @@ namespace EVOptimization
             {
                 return ChargeProfiles.Select(profile => profile.StateOfCharge).ToList();
             }
+
+            public List<double> GetCombinedPowerSeries()
+            {
+                return ChargeProfiles.Select(profile => profile.ChargePower - profile.DischargePower).ToList();
+            }
         }
 
         public class EVChargeProfile

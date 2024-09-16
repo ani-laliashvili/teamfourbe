@@ -26,8 +26,8 @@ namespace EVOptimizationAPI.Controllers
             InitializationData data = Initialize();
             var results = Optimization.SolveOptimization(solver, data.NumTimeSlots, data.Households, data.EVs, data.Appliances, data.P_Price, data.Outage);
 
-            // Initialize an empty list to hold the StateOfCharge results for each EV
-            var allStateOfChargeResults = new List<List<double>>();
+            // Initialize a list to hold the result DTOs for each EV
+            var optimizationResults = new List<OptimizationResultDto>();
 
             // Iterate through each EVResult in the results
             foreach (var evResult in results.EVResults)
@@ -35,12 +35,24 @@ namespace EVOptimizationAPI.Controllers
                 // Get the StateOfCharge list for the current EV
                 var stateOfChargeList = evResult.GetStateOfChargeList();
 
-                // Add the list for this EV as a separate array
-                allStateOfChargeResults.Add(stateOfChargeList);
+                // Get the combined power series for the current EV
+                var combinedPowerSeries = evResult.GetCombinedPowerSeries();
+
+                // Create a result DTO for this EV
+                var result = new OptimizationResultDto
+                {
+                    EVId = evResult.EVId, // Use the actual EV ID
+                    ChargeLevelsPer60Min = stateOfChargeList, // Charge level per hour
+                    ChargingSchedule = combinedPowerSeries, // Charging schedule per hour (combined charge and discharge)
+                    FinalCharge = stateOfChargeList.Last() // Final charge after all hours
+                };
+
+                // Add this result to the list of results
+                optimizationResults.Add(result);
             }
 
-            // Return the combined result (list of lists)
-            return Ok(allStateOfChargeResults);
+            // Return the list of results
+            return Ok(optimizationResults);
 
 
         }
