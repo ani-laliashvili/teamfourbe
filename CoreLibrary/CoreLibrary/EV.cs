@@ -18,9 +18,11 @@ namespace CoreLibrary
         private bool isCharging;
         private bool isRunningEssentialAppliances;
         private bool isRunningAllAppliances;
+        private readonly double consumptionRatePerMile;
 
         // Constructor to initialize the current charge and consumption rate
-        public EV(int id, int householdId, double batteryCapacity, double initialCharge, double chargeEmergencyLevel, bool isAvailableForDischarge)
+        public EV(int id, int householdId, double batteryCapacity, double initialCharge, double chargeEmergencyLevel, bool isAvailableForDischarge,
+            double consumptionRatePerMile = 0.0)
         {
             if (initialCharge < 0 || initialCharge > 100)
             {
@@ -34,23 +36,7 @@ namespace CoreLibrary
             SoCEmergencyLevel = chargeEmergencyLevel;
             IsAvailableForDischarge = isAvailableForDischarge;
             CurrentCharge = initialCharge;
-        }
 
-        public static List<EV> CreateEVs(List<Household> households)
-        {
-            List<EV> EVs = new List<EV>();
-
-            // EV 1 for Household 1
-            EVs.Add(new EV(1,1,60.0,50.0,0.8,true));
-
-            // EV 2 for Household 2
-            EVs.Add(new EV(2,2,50.0,30.0,0.7,false));
-
-            CurrentCharge = initialCharge;
-            this.consumptionRatePerMile = consumptionRatePerMile;
-            isCharging = false;
-            isRunningEssentialAppliances = false;
-            isRunningAllAppliances = false;
         }
 
         // Method to charge the EV, increments the charge by the given amount
@@ -125,14 +111,14 @@ namespace CoreLibrary
         }
 
         // Method to drive the EV a certain distance
-        public string Drive(double distanceInKm)
+        public string Drive(double distanceInMiles)
         {
-            if (distanceInKm < 0)
+            if (distanceInMiles < 0)
             {
                 return "Distance cannot be negative.";
             }
 
-            double totalConsumption = distanceInKm * consumptionRatePerMile;
+            double totalConsumption = distanceInMiles * consumptionRatePerMile;
 
             if (CurrentCharge < totalConsumption)
             {
@@ -142,7 +128,7 @@ namespace CoreLibrary
             }
 
             CurrentCharge -= totalConsumption;
-            return $"You drove {distanceInKm:F2} km. Remaining charge: {CurrentCharge:F2}%.";
+            return $"You drove {distanceInMiles:F2} km. Remaining charge: {CurrentCharge:F2}%.";
         }
 
         // Optional: Method to return the current charge
