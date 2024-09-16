@@ -28,7 +28,7 @@ namespace EVOptimization
             List<EV> EVs = EV.CreateEVs(households);
             List<Appliance> appliances = Appliance.CreateAppliances();
 
-            Outage outage = new Outage();
+            Outage outage = new Outage(4,5);
 
             // Electricity price forecast (prices in $ per kWh)
             double[] P_price = PriceForecast.CreatePriceForecast(numTimeSlots);
