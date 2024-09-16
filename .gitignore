@@ -15,3 +15,12 @@
 /CoreLibrary/CoreLibrary/obj
 /EVOptimization/.vs/EVOptimization/DesignTimeBuild/.dtbcache.v2
 /EVOptimizationAPI/EVOptimizationAPI/obj/Debug/net8.0/EVOptimizationAPI.AssemblyInfoInputs.cache
+/EVOptimizationAPI/EVOptimizationAPI/obj/project.assets.json
+/EVOptimizationAPI/EVOptimizationAPI/obj/project.nuget.cache
+/EVOptimizationAPI/EVOptimizationAPI/obj/EVOptimizationAPI.csproj.nuget.g.targets
+/EVOptimizationAPI/EVOptimizationAPI/obj/EVOptimizationAPI.csproj.nuget.g.props
+/EVOptimizationAPI/EVOptimizationAPI/obj/EVOptimizationAPI.csproj.nuget.dgspec.json
+/EVOptimizationAPI/EVOptimizationAPI/obj/Debug/net8.0/EVOptimizationAPI.GlobalUsings.g.cs
+/EVOptimizationAPI/EVOptimizationAPI/obj/Debug/net8.0/EVOptimizationAPI.GeneratedMSBuildEditorConfig.editorconfig
+/EVOptimizationAPI/EVOptimizationAPI/obj/Debug/net8.0/EVOptimizationAPI.csproj.AssemblyReference.cache
+/EVOptimizationAPI/EVOptimizationAPI/obj/Debug/net8.0/EVOptimizationAPI.assets.cache
