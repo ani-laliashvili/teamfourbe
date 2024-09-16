@@ -49,8 +49,14 @@ namespace EVOptimization
                 new(2, 2, 30, 70, 0.75, true)   
             };
 
-            List<Appliance> appliances = Appliance.CreateAppliances();
-            Outage outage = new(4, 5); 
+            List<Appliance> appliances = new()
+            {
+                new(1, "Fridge", 0.2, true), // kW
+                new(2, "Lights", 0.1, true), // kW
+                new(3, "HVAC", 2.0, false)    // kW
+            };
+
+            Outage outage = new(4, 5, ""); 
 
             // Electricity price forecast (prices in $ per kWh)
             double[] P_price = PriceForecast.CreatePriceForecast(numTimeSlots);

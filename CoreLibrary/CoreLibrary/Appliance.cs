@@ -15,18 +15,7 @@ namespace CoreLibrary
             Name = name;
             Id = id;
             PowerConsumption = powerConsumption;
-            IsRunning = false;
-        }
-
-        public static List<Appliance> CreateAppliances()
-        {
-            List<Appliance> appliances = new List<Appliance>
-            {
-                new(1, "Fridge", 0.2, true), // kW
-                new(2, "Lights", 0.1, true), // kW
-                new(3, "HVAC", 2.0, false)    // kW
-            };
-            return appliances;
+            IsRunning = isRunning;
         }
 
         // Function to calculate total appliance power for a household at time h
