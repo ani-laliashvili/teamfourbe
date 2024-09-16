@@ -3,9 +3,9 @@ using Google.OrTools.LinearSolver;
 
 namespace EVOptimization;
 
-public static class SolveOptimization
+public static class Optimization
 {
-    public static void SolveOptimization(Solver solver, int numTimeSlots, List<Household> households, List<EV> EVs, List<Appliance> appliances, double[] P_price)
+    public static void SolveOptimization(Solver solver, int numTimeSlots, List<Household> households, List<EV> EVs, List<Appliance> appliances, double[] P_price, Outage outageInfo)
     {
         // Battery degradation cost ($ per kWh)
         double DegCost = 0.05;
@@ -22,8 +22,8 @@ public static class SolveOptimization
         double delta_t = 1.0;
 
         // Outage period (e.g., hours 18 to 20)
-        int outageStart = 18;
-        int outageEnd = 20;
+        int outageStart = outageInfo.HoursFromNowStart;
+        int outageEnd = outageInfo.HoursFromNowEnd;
         int[] OutagePeriod = new int[outageEnd - outageStart];
         for (int h = outageStart; h < outageEnd; h++)
         {

@@ -13,7 +13,7 @@ namespace CoreLibrary
         public string Reason { get; private set; }  // Reason for the outage
 
         // Constructor to initialize the outage
-        public Outage(int hoursFromNowStart, int hoursFromNowEnd, string reason)
+        public Outage(int hoursFromNowStart, int hoursFromNowEnd, string reason = "")
         {
             HoursFromNowStart = hoursFromNowStart;
             HoursFromNowEnd = hoursFromNowEnd;
