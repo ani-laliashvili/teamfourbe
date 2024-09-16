@@ -14,7 +14,7 @@ namespace EVOptimizationAPI.Services
         public OptimizationResultDto OptimizeCharging(OptimizationInputDto input)
         {
             var ev = _evService.GetEVById(input.EVId);
-            var projectedCharge = ev.CurrentCharge;
+            double projectedCharge = ev.CurrentCharge;
             var chargingSchedule = new List<double>();
             var dischargingSchedule = new List<double>();
             var chargeLevels = new List<double>();

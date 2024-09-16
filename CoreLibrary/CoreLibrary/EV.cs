@@ -31,8 +31,8 @@ namespace CoreLibrary
             Id = id;
             HouseholdId = householdId;
             BatteryCapacity = batteryCapacity;
-            SoCMax = 100.0;
-            SoCMin = 0;
+            SoCMax = 90.0;
+            SoCMin = 10;
             SoCEmergencyLevel = chargeEmergencyLevel;
             IsAvailableForDischarge = isAvailableForDischarge;
             CurrentCharge = initialCharge;
