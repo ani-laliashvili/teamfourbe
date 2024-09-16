@@ -45,13 +45,13 @@ namespace EVOptimization
             List<Household> households = Household.CreateHouseholds();
             List<EV> EVs = new()
             {
-                new(1, 1, 50, 60, 0.8, true),  
-                new(2, 2, 30, 70, 0.75, true)   
+                new(id: 1, householdId: 1, batteryCapacity:50, initialCharge:60 * 0.01, chargeEmergencyLevel: 0.8, isAvailableForDischarge:true),  
+                new(id: 2, householdId: 2, 30, 70 * 0.01, 0.75, true)   
             };
 
             List<Appliance> appliances = new()
             {
-                new(1, "Fridge", 0.2, true), // kW
+                new(id: 1, name: "Fridge", powerConsumption: 0.2, isRunning: true), // kW
                 new(2, "Lights", 0.1, true), // kW
                 new(3, "HVAC", 2.0, false)    // kW
             };

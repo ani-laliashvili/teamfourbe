@@ -14,7 +14,7 @@ namespace CoreLibrary
         {
             Name = name;
             Id = id;
-            PowerConsumption = powerConsumption;
+            PowerConsumption = powerConsumption;    //in kW
             IsRunning = isRunning;
         }
 

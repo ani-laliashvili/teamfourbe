@@ -74,6 +74,8 @@ public static class Optimization
 
         foreach (EV ev in EVs)
         {
+            ev.SoCMin *= 0.01;
+            ev.SoCMax *= 0.01;
             for (int h = 0; h < numTimeSlots; h++)
             {
                 P_charge[(ev.Id, h)] = solver.MakeNumVar(0, P_charge_max, $"P_charge_{ev.Id}_{h}");
