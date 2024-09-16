@@ -11,6 +11,7 @@ namespace CoreLibrary
     {
         public string Name { get; private set; }
         public double ChargeReceived { get; private set; }
+        public string Running { get; set; }
 
         // Constructor to initialize the component
         public HomeGridComponent(string name)
