@@ -28,11 +28,13 @@ namespace EVOptimization
             List<EV> EVs = EV.CreateEVs(households);
             List<Appliance> appliances = Appliance.CreateAppliances();
 
+            Outage outage = new Outage();
+
             // Electricity price forecast (prices in $ per kWh)
             double[] P_price = PriceForecast.CreatePriceForecast(numTimeSlots);
 
             // Call a separate method to set up and solve the optimization model
-            SolveOptimization.SolveOptimization(solver, numTimeSlots, households, EVs, appliances, P_price);
+            Optimization.SolveOptimization(solver, numTimeSlots, households, EVs, appliances, P_price, outage);
         }
     }
 }
