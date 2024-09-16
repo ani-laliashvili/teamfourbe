@@ -1,5 +1,8 @@
-using Microsoft.AspNetCore.Hosting;
+using CoreLibrary;
+using EVOptimizationAPI.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Collections.Generic;
 
 namespace EVOptimizationAPI
 {
@@ -7,7 +10,12 @@ namespace EVOptimizationAPI
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+
+            // Seed data after building the host
+            SeedData(host);
+
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -16,5 +24,30 @@ namespace EVOptimizationAPI
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+        // Seeding EV data
+        private static void SeedData(IHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                // Get the EVService (or any other service you want to use to seed data)
+                var evService = services.GetRequiredService<IEVService>();
+
+                // Seed initial EV data
+                var initialEVs = new List<EV>
+                {
+                    new EV(80, 2), // EV with 80% charge and 2% consumption rate per mile
+                    new EV(50, 1.5), // EV with 50% charge and 1.5% consumption rate per mile
+                    new EV(100, 2.5) // Fully charged EV with 2.5% consumption rate per mile
+                };
+
+                foreach (var ev in initialEVs)
+                {
+                    evService.AddEV(ev); // Assuming AddEV method exists in the IEVService
+                }
+            }
+        }
     }
 }

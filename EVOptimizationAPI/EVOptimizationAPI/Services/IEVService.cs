@@ -7,6 +7,6 @@ namespace EVOptimizationAPI.Services
         EV GetEVById(int id);
         void ChargeEV(int id, double amount);
         void DischargeEV(int id, double amount);
-        // Other methods for EV optimization
+        void AddEV(EV ev); // AddEV method to add a new EV
     }
 }
