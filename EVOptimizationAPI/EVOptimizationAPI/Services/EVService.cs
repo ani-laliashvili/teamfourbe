@@ -70,6 +70,7 @@ namespace EVOptimizationAPI.Services
 
             var ev = GetEVById(id);
             ev.StopRunningAppliances(); // Stop any appliance usage
+            ev.IsCharging=false;
         }
 
         // Background method to charge the EV over time
