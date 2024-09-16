@@ -33,6 +33,4 @@
 /EVOptimizationAPI/EVOptimizationAPI/bin/Debug/net8.0
 /EVOptimizationAPI/EVOptimizationAPI/obj/Debug/net8.0
 /CoreLibrary/CoreLibrary/bin/Debug/net8.0
-/CoreLibrary/.vs/ProjectEvaluation
-/EVOptimization/.vs/ProjectEvaluation
-/EVOptimizationAPI/EVOptimizationAPI/obj/Release/net8.0
+/EVOptimizationAPI/EVOptimizationAPI/EVOptimizationAPI.csproj.user
