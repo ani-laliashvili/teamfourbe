@@ -13,3 +13,12 @@
 /CoreLibrary/.vs/CoreLibrary
 /CoreLibrary/CoreLibrary/obj/Debug/net8.0
 /CoreLibrary/CoreLibrary/obj
+/EVOptimization/.vs/EVOptimization/DesignTimeBuild/.dtbcache.v2
+*.bin
+/EVOptimization/EVOptimization/bin/Debug/net8.0/EVOptimization.deps.json
+/EVOptimization/EVOptimization/bin/Debug/net8.0/EVOptimization.dll
+/EVOptimization/EVOptimization/bin/Debug/net8.0/runtimes
+/EVOptimization/EVOptimization/bin/Debug/net8.0
+/EVOptimizationAPI/EVOptimizationAPI/obj/Release/net8.0
+/.vs/slnx.sqlite
+/.vs/VSWorkspaceState.json
