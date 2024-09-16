@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using Google.OrTools.LinearSolver;
+﻿using Google.OrTools.LinearSolver;
 
 namespace EVOptimization
 {
@@ -19,7 +15,7 @@ namespace EVOptimization
             }
 
             // Time slots (5 mins in a 24-hour period)
-            int numTimeSlots = 24 * (60 / 5);
+            int numTimeSlots = 24;
             int[] timeSlots = new int[numTimeSlots];
             for (int h = 0; h<numTimeSlots; h++)
             {
@@ -88,7 +84,7 @@ namespace EVOptimization
             // z[e, h]: Binary variable indicating charging (1) or discharging (0) mode
             Dictionary<(int e, int h), Variable> z = new();
 
-            // P_peak: Auxiliary variable representing peak EV charging load
+            // P_peak: Auxiliary variable representing peak load
             Variable P_peak = solver.MakeNumVar(0, double.PositiveInfinity, "P_peak");
 
             // P_EV[h]: Total EV charging power in the community at time h
@@ -214,12 +210,22 @@ namespace EVOptimization
                     totalEVCharging += P_charge[(ev.Id, h)];
                 }
 
+                // Build total household power consumption expression
+                LinearExpr totalHouseholdPower = new LinearExpr();
+
+                foreach (Household household in households)
+                {
+                    totalHouseholdPower += P_grid[(household.Id, h)];
+                }
+
                 // Add constraint for total EV charging power at time slot h
                 solver.Add(P_EV[h] == totalEVCharging);
 
-                // Add constraint for the peak charging power
-                solver.Add(P_EV[h] <= P_peak);
+                // Add constraint that peak power P_peak must be greater than or equal to the sum of total EV charging and household power at each time slot
+                solver.Add(P_peak >= P_EV[h] + totalHouseholdPower);
             }
+
+
 
 
             // Objective function
