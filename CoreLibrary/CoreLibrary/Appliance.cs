@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CoreLibrary
 {
-    public class HomeGridComponent
+    public class Appliance
     {
         public string Name { get; private set; }
         public double ChargeReceived { get; private set; }
@@ -14,7 +14,7 @@ namespace CoreLibrary
         public bool IsRunning { get; private set; }
 
         // Constructor to initialize the component with a name and charge needed to run
-        public HomeGridComponent(string name, double chargeNeededToRun)
+        public Appliance(string name, double chargeNeededToRun)
         {
             Name = name;
             ChargeReceived = 0;
