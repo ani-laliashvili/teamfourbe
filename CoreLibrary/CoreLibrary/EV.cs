@@ -62,7 +62,7 @@ namespace CoreLibrary
         }
 
         // Method to send charge to another component in the home grid
-        public void SendChargeTo(double amount, HomeGridComponent component)
+        public void SendChargeTo(double amount, Appliance component)
         {
             if (amount < 0)
             {
