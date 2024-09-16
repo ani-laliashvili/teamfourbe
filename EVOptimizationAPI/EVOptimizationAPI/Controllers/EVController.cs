@@ -29,6 +29,7 @@ namespace EVOptimizationAPI.Controllers
                 var evStatus = new EVStatusDto
                 {
                     CurrentCharge = ev.GetCurrentChargeInPercentage(),
+                    IsCharging = ev.IsCharging,
                     IsRunningEssentialAppliances = isRunningEssentialAppliances,
                     IsRunningAllAppliances = isRunningAllAppliances
                 };
@@ -85,8 +86,8 @@ namespace EVOptimizationAPI.Controllers
         [HttpPost("chargeovertime/{id}")]
         public async Task<IActionResult> ChargeOverTime(int id, [FromBody] ChargeOverTimeDto request)
         {
-            var result = await _evService.ChargeOverTime(id, request.ChargerPowerKWh, request.TimeIntervalHours, request.ChargeUntil);
-            return Ok(result);
+            _evService.ChargeOverTime(id, request.ChargerPowerKWh, request.TimeIntervalHours, request.ChargeUntil);
+            return Ok($"Charging process for EV {id} started in the background.");
         }
     }
 }
