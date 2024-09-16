@@ -6,7 +6,13 @@ namespace CoreLibrary
     {
         // Current charge of the EV in percentage (0 to 100)
         public double CurrentCharge { get; private set; }
-        private readonly double consumptionRatePerMile;
+        public int Id { get; set; }  // EV Identifier
+        public int HouseholdId { get; set; }  // ID of the household that owns the EV
+        public double BatteryCapacity { get; set; }  // in kWh
+        public double SoCMin { get; set; }  // Minimum State of Charge (fraction)
+        public double SoCMax { get; set; }  // Maximum State of Charge (fraction)
+        public double SoCEmergencyLevel { get; set; }  // Desired SoC before outage
+        public bool IsAvailableForDischarge { get; set; }  // User override for upcoming travel
 
         // Flags to track if charging or appliance running status is active
         private bool isCharging;
@@ -14,17 +20,31 @@ namespace CoreLibrary
         private bool isRunningAllAppliances;
 
         // Constructor to initialize the current charge and consumption rate
-        public EV(double initialCharge, double consumptionRatePerMile)
+        public EV(int id, int householdId, double batteryCapacity, double initialCharge, double chargeEmergencyLevel, bool isAvailableForDischarge)
         {
             if (initialCharge < 0 || initialCharge > 100)
             {
                 throw new ArgumentException("Initial charge must be between 0 and 100.");
             }
+            Id = id;
+            HouseholdId = householdId;
+            BatteryCapacity = batteryCapacity;
+            SoCMax = 100.0;
+            SoCMin = 0;
+            SoCEmergencyLevel = chargeEmergencyLevel;
+            IsAvailableForDischarge = isAvailableForDischarge;
+            CurrentCharge = initialCharge;
+        }
 
-            if (consumptionRatePerMile <= 0)
-            {
-                throw new ArgumentException("Consumption rate must be positive.");
-            }
+        public static List<EV> CreateEVs(List<Household> households)
+        {
+            List<EV> EVs = new List<EV>();
+
+            // EV 1 for Household 1
+            EVs.Add(new EV(1,1,60.0,50.0,0.8,true));
+
+            // EV 2 for Household 2
+            EVs.Add(new EV(2,2,50.0,30.0,0.7,false));
 
             CurrentCharge = initialCharge;
             this.consumptionRatePerMile = consumptionRatePerMile;

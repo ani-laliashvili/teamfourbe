@@ -11,4 +11,8 @@
     <PackageReference Include="Google.OrTools" Version="9.11.4210" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\CoreLibrary\CoreLibrary\CoreLibrary.csproj" />
+  </ItemGroup>
+
 </Project>
