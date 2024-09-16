@@ -6,7 +6,7 @@ namespace EVOptimization;
 
 public static class Optimization
 {
-    public static OptimizationResult SolveOptimization(Solver solver, int numTimeSlots, List<Household> households, List<EV> EVs,
+    public OptimizationResult SolveOptimization(Solver solver, int numTimeSlots, List<Household> households, List<EV> EVs,
         List<Appliance> appliances, double[] P_price, Outage outageInfo)
     {
         // Battery degradation cost ($ per kWh)

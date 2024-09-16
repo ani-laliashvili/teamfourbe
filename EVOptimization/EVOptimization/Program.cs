@@ -43,20 +43,20 @@ namespace EVOptimization
 
             // Create sample data for households, EVs, and appliances
             List<Household> households = Household.CreateHouseholds();
-            List<EV> EVs = new List<EV>
+            List<EV> EVs = new()
             {
-                new EV(1, 1, 50, 60, 0.8, true),  
-                new EV(2, 2, 30, 70, 0.75, true)   
+                new(1, 1, 50, 60, 0.8, true),  
+                new(2, 2, 30, 70, 0.75, true)   
             };
 
             List<Appliance> appliances = Appliance.CreateAppliances();
-            Outage outage = new Outage(4, 5); 
+            Outage outage = new(4, 5); 
 
             // Electricity price forecast (prices in $ per kWh)
             double[] P_price = PriceForecast.CreatePriceForecast(numTimeSlots);
 
             // Return all initialized data
-            return new InitializationData
+            return new()
             {
                 NumTimeSlots = numTimeSlots,
                 Households = households,
