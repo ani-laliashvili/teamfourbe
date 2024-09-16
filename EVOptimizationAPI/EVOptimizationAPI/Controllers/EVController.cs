@@ -1,4 +1,5 @@
 using CoreLibrary;
+using EVOptimization;
 using EVOptimizationAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,5 +42,30 @@ namespace EVOptimizationAPI.Controllers
             _evService.DischargeEV(id, amount);
             return Ok("EV discharged.");
         }
+
+        // POST: api/ev/stop
+        [HttpPost("stop")]
+        public IActionResult StopAction()
+        {
+            _evService.StopCurrentOperation();
+            return Ok("Current operation stopped.");
+        }
+
+        // POST: api/ev/chargeovertime
+        [HttpPost("chargeovertime")]
+        public async Task<IActionResult> ChargeOverTime([FromBody] ChargeOverTimeDto request)
+        {
+            var result = await _ev.ChargeOverTime(request.TotalChargeAmount, request.ChargeRatePerSecond, request.TimeIntervalInSeconds);
+            return Ok(result);
+        }
+
+        // POST: api/ev/dischargeovertime
+        [HttpPost("dischargeovertime")]
+        public async Task<IActionResult> DischargeOverTime([FromBody] DischargeOverTimeDto request)
+        {
+            var result = await _ev.DischargeOverTime(request.TotalDischargeAmount, request.DischargeRatePerSecond, request.TimeIntervalInSeconds);
+            return Ok(result);
+        }
     }
+}
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 namespace CoreLibrary
 {
@@ -81,82 +80,6 @@ namespace CoreLibrary
             {
                 Console.WriteLine("No operation to stop.");
             }
-        }
-
-        // Method to charge the EV over time asynchronously
-        public async Task<string> ChargeOverTime(double totalChargeAmount, double chargeRatePerSecond, int timeIntervalInSeconds)
-        {
-            if (totalChargeAmount < 0)
-            {
-                throw new ArgumentException("Charge amount cannot be negative.");
-            }
-
-            isCharging = true; // Mark that charging is in progress
-            double chargeIncrement = chargeRatePerSecond * timeIntervalInSeconds;
-            double chargeToAdd = 0;
-            string status = "";
-
-            while (chargeToAdd < totalChargeAmount && CurrentCharge < 100 && isCharging)
-            {
-                await Task.Delay(timeIntervalInSeconds * 1000); // Wait for the specified interval
-                chargeToAdd += chargeIncrement;
-                Charge(chargeIncrement); // Add the incremental charge
-
-                status = $"Charging... Current charge: {CurrentCharge}%";
-
-                if (CurrentCharge >= 100)
-                {
-                    status = "EV is fully charged.";
-                    break;
-                }
-            }
-
-            isCharging = false; // Charging complete or stopped
-
-            if (CurrentCharge < 100 && !isCharging)
-            {
-                status = "Charging stopped.";
-            }
-
-            return status;
-        }
-
-        // Method to discharge the EV over time asynchronously
-        public async Task<string> DischargeOverTime(double totalDischargeAmount, double dischargeRatePerSecond, int timeIntervalInSeconds)
-        {
-            if (totalDischargeAmount < 0)
-            {
-                throw new ArgumentException("Discharge amount cannot be negative.");
-            }
-
-            isDischarging = true; // Mark that discharging is in progress
-            double dischargeIncrement = dischargeRatePerSecond * timeIntervalInSeconds;
-            double dischargeToSubtract = 0;
-            string status = "";
-
-            while (dischargeToSubtract < totalDischargeAmount && CurrentCharge > 0 && isDischarging)
-            {
-                await Task.Delay(timeIntervalInSeconds * 1000); // Wait for the specified interval
-                dischargeToSubtract += dischargeIncrement;
-                Discharge(dischargeIncrement); // Subtract the incremental discharge
-
-                status = $"Discharging... Current charge: {CurrentCharge}%";
-
-                if (CurrentCharge <= 0)
-                {
-                    status = "EV is fully discharged.";
-                    break;
-                }
-            }
-
-            isDischarging = false; // Discharging complete or stopped
-
-            if (CurrentCharge > 0 && !isDischarging)
-            {
-                status = "Discharging stopped.";
-            }
-
-            return status;
         }
 
         // Method to drive the EV a certain distance
