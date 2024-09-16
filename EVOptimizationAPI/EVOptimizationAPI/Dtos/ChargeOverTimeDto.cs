@@ -2,8 +2,7 @@
 {
     public class ChargeOverTimeDto
     {
-        public double TotalChargeAmount { get; set; }
-        public double ChargeRatePerSecond { get; set; }
-        public int TimeIntervalInSeconds { get; set; }
+        public double ChargerPowerKWh { get; set; } 
+        public double TimeIntervalHours { get; set; }
     }
 }

@@ -46,7 +46,7 @@ namespace EVOptimizationAPI.Controllers
         public IActionResult ChargeEV(int id, [FromBody] double amount)
         {
             _evService.ChargeEV(id, amount);
-            return Ok($"EV {id} charged by {amount}%. Current charge: {_evService.GetEVById(id).GetCurrentChargeInPercentage()}%");
+            return Ok($"EV {id} charged by {amount}kWh. Current charge: {_evService.GetEVById(id).GetCurrentChargeInPercentage()}%");
         }
 
         // POST: api/ev/run-essential-appliances
@@ -85,7 +85,7 @@ namespace EVOptimizationAPI.Controllers
         [HttpPost("chargeovertime/{id}")]
         public async Task<IActionResult> ChargeOverTime(int id, [FromBody] ChargeOverTimeDto request)
         {
-            var result = await _evService.ChargeOverTime(id, request.TotalChargeAmount, request.ChargeRatePerSecond, request.TimeIntervalInSeconds);
+            var result = await _evService.ChargeOverTime(id, request.ChargerPowerKWh, request.TimeIntervalHours);
             return Ok(result);
         }
     }
