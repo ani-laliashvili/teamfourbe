@@ -9,32 +9,62 @@ namespace EVOptimization
         {
             // Initialize the solver
             Solver solver = Solver.CreateSolver("CBC_MIXED_INTEGER_PROGRAMMING");
-            if (solver == null)
+            
+            try
             {
-                Console.WriteLine("Could not create solver.");
-                return;
-            }
+                // Initialize data
+                InitializationData data = Initialize();
 
+                // Call a separate method to set up and solve the optimization model
+                var results = Optimization.SolveOptimization(solver, data.NumTimeSlots, data.Households, data.EVs, data.Appliances, data.P_Price, data.Outage);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+        }
+
+        // Class to store initialization data
+        public class InitializationData
+        {
+            public int NumTimeSlots { get; set; }
+            public List<Household> Households { get; set; }
+            public List<EV> EVs { get; set; }
+            public List<Appliance> Appliances { get; set; }
+            public double[] P_Price { get; set; }
+            public Outage Outage { get; set; }
+        }
+
+        // Initialization of the data
+        public static InitializationData Initialize()
+        {
             // Time slots (24-hour period)
             int numTimeSlots = 24;
-            int[] timeSlots = new int[numTimeSlots];
-            for (int h = 0; h<numTimeSlots; h++)
-            {
-                timeSlots[h] = h;
-            }
 
             // Create sample data for households, EVs, and appliances
             List<Household> households = Household.CreateHouseholds();
-            List<EV> EVs = EV.CreateEVs(households);
-            List<Appliance> appliances = Appliance.CreateAppliances();
+            List<EV> EVs = new()
+            {
+                new(1, 1, 50, 60, 0.8, true),  
+                new(2, 2, 30, 70, 0.75, true)   
+            };
 
-            Outage outage = new Outage(4,5);
+            List<Appliance> appliances = Appliance.CreateAppliances();
+            Outage outage = new(4, 5); 
 
             // Electricity price forecast (prices in $ per kWh)
             double[] P_price = PriceForecast.CreatePriceForecast(numTimeSlots);
 
-            // Call a separate method to set up and solve the optimization model
-            Optimization.SolveOptimization(solver, numTimeSlots, households, EVs, appliances, P_price, outage);
+            // Return all initialized data
+            return new()
+            {
+                NumTimeSlots = numTimeSlots,
+                Households = households,
+                EVs = EVs,
+                Appliances = appliances,
+                P_Price = P_price,
+                Outage = outage
+            };
         }
     }
 }
