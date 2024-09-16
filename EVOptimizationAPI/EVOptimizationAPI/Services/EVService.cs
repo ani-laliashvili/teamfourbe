@@ -72,23 +72,24 @@ namespace EVOptimizationAPI.Services
         }
 
         // Method to charge the EV over time asynchronously
-        public async Task<string> ChargeOverTime(int id, double totalChargeAmount, double chargeRatePerSecond, int timeIntervalInSeconds)
+        public async Task<string> ChargeOverTime(int id, double ChargerPowerKWh, double timeIntervalInHours)
         {
             var ev = GetEVById(id);
             _isCharging[id] = true;
-            double chargeIncrement = chargeRatePerSecond * timeIntervalInSeconds;
+            int timeIntervalInSeconds = (int)(timeIntervalInHours * 3600);
+            double chargeIncrement = ChargerPowerKWh * 3600 * timeIntervalInSeconds;
             double chargeToAdd = 0;
             string status = "";
 
-            while (chargeToAdd < totalChargeAmount && ev.CurrentCharge < 100 && _isCharging[id])
+            while (ev.CurrentCharge < ev.BatteryCapacity && _isCharging[id])
             {
                 await Task.Delay(timeIntervalInSeconds * 1000); // Wait for the specified interval
                 chargeToAdd += chargeIncrement;
                 ev.Charge(chargeIncrement); // Add the incremental charge
 
-                status = $"Charging EV {id}... Current charge: {ev.CurrentCharge}%";
+                status = $"Charging EV {id}... Current charge: {ev.GetCurrentChargeInPercentage()}%";
 
-                if (ev.CurrentCharge >= 100)
+                if (ev.CurrentCharge >= ev.BatteryCapacity)
                 {
                     status = $"EV {id} is fully charged.";
                     break;
