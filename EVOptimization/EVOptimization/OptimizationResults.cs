@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EVOptimization
 {
-    class OptimizationResults
+    public class OptimizationResults
     {
         public class OptimizationResult
         {
