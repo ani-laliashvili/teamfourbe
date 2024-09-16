@@ -52,17 +52,17 @@ namespace EVOptimizationAPI.Controllers
 
         // POST: api/ev/run-essential-appliances
         [HttpPost("run-essential-appliances/{id}")]
-        public IActionResult RunEssentialAppliances(int id, [FromBody] double amount)
+        public IActionResult RunEssentialAppliances(int id)
         {
-            _evService.RunEssentialAppliances(id, amount);
+            _evService.RunEssentialAppliances(id, 50);
             return Ok($"Running essential appliances for EV {id}. Current charge: {_evService.GetEVById(id).GetCurrentChargeInPercentage()}%");
         }
 
         // POST: api/ev/run-all-appliances
         [HttpPost("run-all-appliances/{id}")]
-        public IActionResult RunAllAppliances(int id, [FromBody] double amount)
+        public IActionResult RunAllAppliances(int id)
         {
-            _evService.RunAllAppliances(id, amount);
+            _evService.RunAllAppliances(id, 50);
             return Ok($"Running all appliances for EV {id}. Current charge: {_evService.GetEVById(id).GetCurrentChargeInPercentage()}%");
         }
 
