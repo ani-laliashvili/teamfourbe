@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using EVOptimization;
 using Google.OrTools.LinearSolver;
 using CoreLibrary;
+using System.Collections.Generic;
 
 namespace EVOptimizationAPI.Controllers
 {
@@ -24,7 +25,24 @@ namespace EVOptimizationAPI.Controllers
             Solver solver = Solver.CreateSolver("CBC_MIXED_INTEGER_PROGRAMMING");
             InitializationData data = Initialize();
             var results = Optimization.SolveOptimization(solver, data.NumTimeSlots, data.Households, data.EVs, data.Appliances, data.P_Price, data.Outage);
-            return Ok(results);
+
+            // Initialize an empty list to hold the StateOfCharge results for each EV
+            var allStateOfChargeResults = new List<List<double>>();
+
+            // Iterate through each EVResult in the results
+            foreach (var evResult in results.EVResults)
+            {
+                // Get the StateOfCharge list for the current EV
+                var stateOfChargeList = evResult.GetStateOfChargeList();
+
+                // Add the list for this EV as a separate array
+                allStateOfChargeResults.Add(stateOfChargeList);
+            }
+
+            // Return the combined result (list of lists)
+            return Ok(allStateOfChargeResults);
+
+
         }
 
         // Initialization of the data

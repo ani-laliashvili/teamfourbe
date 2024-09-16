@@ -21,6 +21,11 @@ namespace EVOptimization
             public int EVId { get; set; }
             public int HouseholdId { get; set; }
             public List<EVChargeProfile> ChargeProfiles { get; set; }
+
+            public List<double> GetStateOfChargeList()
+            {
+                return ChargeProfiles.Select(profile => profile.StateOfCharge).ToList();
+            }
         }
 
         public class EVChargeProfile
@@ -31,6 +36,7 @@ namespace EVOptimization
             public double DischargePower { get; set; }
         }
 
+        
         public class CommunityLoadProfile
         {
             public int Hour { get; set; }
