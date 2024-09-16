@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CoreLibrary\CoreLibrary\CoreLibrary.csproj" />
-    <ProjectReference Include="..\..\EVOptimization\EVOptimization\EVOptimization.csproj" />
   </ItemGroup>
 
 </Project>
