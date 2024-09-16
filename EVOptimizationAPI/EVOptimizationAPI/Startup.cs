@@ -27,6 +27,7 @@ namespace EVOptimizationAPI
 
             // Example of adding a singleton service, e.g., for managing EV data
             services.AddSingleton<IEVService, EVService>();
+            services.AddTransient<IEVOptimizationService, EVOptimizationService>();
 
             // Optional: Add API versioning, Swagger, etc.
             services.AddSwaggerGen(); // Enable Swagger for API documentation
