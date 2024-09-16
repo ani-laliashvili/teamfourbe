@@ -13,11 +13,11 @@ namespace CoreLibrary
         public double SoCMax { get; set; }  // Maximum State of Charge (fraction)
         public double SoCEmergencyLevel { get; set; }  // Desired SoC before outage
         public bool IsAvailableForDischarge { get; set; }  // User override for upcoming travel
+        public bool IsCharging { get; set; }
+        public bool IsRunningEssentialAppliances { get; set; }
+        public bool IsRunningAllAppliances { get; set; }
 
         // Flags to track if charging or appliance running status is active
-        private bool isCharging;
-        private bool isRunningEssentialAppliances;
-        private bool isRunningAllAppliances;
         private readonly double consumptionRatePerMile;
 
         // Constructor to initialize the current charge and consumption rate
@@ -63,7 +63,7 @@ namespace CoreLibrary
                 throw new ArgumentException("Consumption amount cannot be negative.");
             }
 
-            isRunningEssentialAppliances = true;
+            IsRunningEssentialAppliances = true;
             CurrentCharge -= amount;
 
             if (CurrentCharge < 0)
@@ -80,7 +80,7 @@ namespace CoreLibrary
                 throw new ArgumentException("Consumption amount cannot be negative.");
             }
 
-            isRunningAllAppliances = true;
+            IsRunningAllAppliances = true;
             CurrentCharge -= amount;
 
             if (CurrentCharge < 0)
@@ -92,19 +92,19 @@ namespace CoreLibrary
         // Method to stop running appliances
         public void StopRunningAppliances()
         {
-            if (isRunningEssentialAppliances)
+            if (IsRunningEssentialAppliances)
             {
-                isRunningEssentialAppliances = false;
+                IsRunningEssentialAppliances = false;
                 Console.WriteLine("Stopped running essential appliances.");
             }
 
-            if (isRunningAllAppliances)
+            if (IsRunningAllAppliances)
             {
-                isRunningAllAppliances = false;
+                IsRunningAllAppliances = false;
                 Console.WriteLine("Stopped running all appliances.");
             }
 
-            if (!isRunningEssentialAppliances && !isRunningAllAppliances)
+            if (!IsRunningEssentialAppliances && !IsRunningAllAppliances)
             {
                 Console.WriteLine("No appliances are running.");
             }
@@ -135,18 +135,6 @@ namespace CoreLibrary
         public double GetCurrentChargeInPercentage()
         {
             return (CurrentCharge * 100 / BatteryCapacity);
-        }
-
-        // Method to return the status of running essential appliances
-        public bool IsRunningEssentialAppliances()
-        {
-            return isRunningEssentialAppliances;
-        }
-
-        // Method to return the status of running all appliances
-        public bool IsRunningAllAppliances()
-        {
-            return isRunningAllAppliances;
         }
     }
 }

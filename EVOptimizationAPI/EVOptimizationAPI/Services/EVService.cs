@@ -32,6 +32,7 @@ namespace EVOptimizationAPI.Services
         public void ChargeEV(int id, double amount)
         {
             var ev = GetEVById(id);
+            ev.IsCharging = true;
             ev.Charge(amount);
         }
 
@@ -71,72 +72,58 @@ namespace EVOptimizationAPI.Services
             ev.StopRunningAppliances(); // Stop any appliance usage
         }
 
-        // Method to charge the EV over time asynchronously
-        public async Task<string> ChargeOverTime(int id, double ChargerPowerKWh, double timeIntervalInHours, double? chargeUntil = null)
+        // Background method to charge the EV over time
+        public void ChargeOverTime(int id, double ChargerPowerKWh, double timeIntervalInHours, double? chargeUntil = null)
         {
-            if (timeIntervalInHours <= 0)
-                return "Invalid time interval";
-
+            // Set isCharging to true immediately before running the background task
             var ev = GetEVById(id);
+            ev.IsCharging = true;
 
-            // Set default `chargeUntil` to EV's BatteryCapacity if not specified
-            if (chargeUntil == null || chargeUntil > ev.BatteryCapacity)
-                chargeUntil = ev.BatteryCapacity;
-
-            _isCharging[id] = true;
-
-            // Charge increment is the power provided (in kWh) multiplied by the time interval
-            double chargeIncrement = ChargerPowerKWh * timeIntervalInHours;
-            string status = "";
-
-            while (ev.CurrentCharge < chargeUntil && ev.CurrentCharge < ev.BatteryCapacity && _isCharging[id])
+            Task.Run(() =>
             {
-                // Wait for the time interval before adding the next charge increment
-                await Task.Delay((int)(timeIntervalInHours * 3600 * 1000)); // Convert hours to milliseconds
+                if (timeIntervalInHours <= 0)
+                    return;
 
-                // Add the charge increment, but ensure it doesn't exceed the target charge or battery capacity
-                ev.Charge(Math.Min(chargeIncrement, chargeUntil.Value - ev.CurrentCharge));
+                // Set default `chargeUntil` to EV's BatteryCapacity if not specified
+                if (chargeUntil == null || chargeUntil > ev.BatteryCapacity)
+                    chargeUntil = ev.BatteryCapacity;
 
-                // Update status
-                status = $"Charging EV {id}... Current charge: {ev.CurrentCharge} kWh";
+                // Charge increment is the power provided (in kWh) multiplied by the time interval
+                double chargeIncrement = ChargerPowerKWh * timeIntervalInHours;
 
-                // Stop charging if the EV reaches the target charge or battery capacity
-                if (ev.CurrentCharge >= ev.BatteryCapacity)
+                while (ev.CurrentCharge < chargeUntil && ev.CurrentCharge < ev.BatteryCapacity && ev.IsCharging)
                 {
-                    status = $"EV {id} is fully charged at {ev.BatteryCapacity} kWh.";
-                    break;
+                    // Block the current thread for the specified time interval
+                    System.Threading.Thread.Sleep((int)(timeIntervalInHours * 3600 * 1000)); // Convert hours to milliseconds
+
+                    // Add the charge increment, but ensure it doesn't exceed the target charge or battery capacity
+                    ev.Charge(Math.Min(chargeIncrement, chargeUntil.Value - ev.CurrentCharge));
+
+                    // Check if the EV is fully charged or reached the target charge
+                    if (ev.CurrentCharge >= ev.BatteryCapacity || ev.CurrentCharge >= chargeUntil)
+                    {
+                        break;
+                    }
                 }
 
-                if (ev.CurrentCharge >= chargeUntil)
-                {
-                    status = $"EV {id} reached the target charge of {chargeUntil} kWh.";
-                    break;
-                }
-            }
-
-            _isCharging[id] = false; // Charging complete or stopped
-
-            if (ev.CurrentCharge < ev.BatteryCapacity && !_isCharging[id])
-            {
-                status = $"Charging stopped for EV {id}.";
-            }
-
-            return status;
+                ev.IsCharging = false; // Charging complete or stopped
+            });
         }
+
 
 
         // Method to check if essential appliances are running
         public bool IsRunningEssentialAppliances(int id)
         {
             var ev = GetEVById(id);
-            return ev.IsRunningEssentialAppliances();
+            return ev.IsRunningEssentialAppliances;
         }
 
         // Method to check if all appliances are running
         public bool IsRunningAllAppliances(int id)
         {
             var ev = GetEVById(id);
-            return ev.IsRunningAllAppliances();
+            return ev.IsRunningAllAppliances;
         }
     }
 }
