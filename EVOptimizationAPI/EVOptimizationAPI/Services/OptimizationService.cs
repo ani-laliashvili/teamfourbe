@@ -60,7 +60,6 @@ namespace EVOptimizationAPI.Services
                 EVId = input.EVId,
                 ChargeLevelsPer60Min = chargeLevels,
                 ChargingSchedule = chargingSchedule,
-                DischargingSchedule = dischargingSchedule,
                 FinalCharge = projectedCharge
             };
         }
