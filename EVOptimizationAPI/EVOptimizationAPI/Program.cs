@@ -38,9 +38,9 @@ namespace EVOptimizationAPI
                 // Seed initial EV data
                 var initialEVs = new List<EV>
                 {
-                    new EV(1, 2, 100, 80, 50, true, 2), // EV with 80% charge and 2% consumption rate per mile
-                    new EV(1, 3, 50, 1.5, 50, true, 2), // EV with 50% charge and 1.5% consumption rate per mile
-                    new EV(1, 2, 100, 2.5, 50, true, 2) // Fully charged EV with 2.5% consumption rate per mile
+                    new EV(1, 2, 80, 70, 50, true, 2), // EV with 80% charge and 2% consumption rate per mile
+                    new EV(1, 3, 70, 35, 50, true, 2), // EV with 50% charge and 1.5% consumption rate per mile
+                    new EV(1, 2, 80, 80, 50, true, 2) // Fully charged EV with 2.5% consumption rate per mile
                 };
 
                 foreach (var ev in initialEVs)

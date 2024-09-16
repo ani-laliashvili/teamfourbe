@@ -28,7 +28,7 @@ namespace EVOptimizationAPI.Controllers
 
                 var evStatus = new EVStatusDto
                 {
-                    CurrentCharge = ev.CurrentCharge,
+                    CurrentCharge = ev.GetCurrentChargeInPercentage(),
                     IsRunningEssentialAppliances = isRunningEssentialAppliances,
                     IsRunningAllAppliances = isRunningAllAppliances
                 };
@@ -46,7 +46,7 @@ namespace EVOptimizationAPI.Controllers
         public IActionResult ChargeEV(int id, [FromBody] double amount)
         {
             _evService.ChargeEV(id, amount);
-            return Ok($"EV {id} charged by {amount}%. Current charge: {_evService.GetEVById(id).GetCurrentCharge()}%");
+            return Ok($"EV {id} charged by {amount}%. Current charge: {_evService.GetEVById(id).GetCurrentChargeInPercentage()}%");
         }
 
         // POST: api/ev/run-essential-appliances
@@ -54,7 +54,7 @@ namespace EVOptimizationAPI.Controllers
         public IActionResult RunEssentialAppliances(int id, [FromBody] double amount)
         {
             _evService.RunEssentialAppliances(id, amount);
-            return Ok($"Running essential appliances for EV {id}. Current charge: {_evService.GetEVById(id).GetCurrentCharge()}%");
+            return Ok($"Running essential appliances for EV {id}. Current charge: {_evService.GetEVById(id).GetCurrentChargeInPercentage()}%");
         }
 
         // POST: api/ev/run-all-appliances
@@ -62,7 +62,7 @@ namespace EVOptimizationAPI.Controllers
         public IActionResult RunAllAppliances(int id, [FromBody] double amount)
         {
             _evService.RunAllAppliances(id, amount);
-            return Ok($"Running all appliances for EV {id}. Current charge: {_evService.GetEVById(id).GetCurrentCharge()}%");
+            return Ok($"Running all appliances for EV {id}. Current charge: {_evService.GetEVById(id).GetCurrentChargeInPercentage()}%");
         }
 
         // POST: api/ev/stop-appliances
