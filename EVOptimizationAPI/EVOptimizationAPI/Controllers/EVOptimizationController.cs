@@ -18,8 +18,8 @@ namespace EVOptimizationAPI.Controllers
             _evOptimizationService = evOptimizationService;
         }
 
-        [HttpPost("optimize")]
-        public ActionResult<OptimizationResultDto> OptimizeEVCharging([FromBody] OptimizationInputDto input)
+        [HttpGet("optimize")]
+        public ActionResult<OptimizationResultDto> OptimizeEVCharging()
         {
             Solver solver = Solver.CreateSolver("CBC_MIXED_INTEGER_PROGRAMMING");
             InitializationData data = Initialize();
