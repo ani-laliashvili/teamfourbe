@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace EVOptimization
+namespace CoreLibrary
 {
     public class Household
     {

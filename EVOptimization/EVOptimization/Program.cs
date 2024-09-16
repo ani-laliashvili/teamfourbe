@@ -1,4 +1,5 @@
 ﻿using Google.OrTools.LinearSolver;
+using CoreLibrary;
 
 namespace EVOptimization
 {
@@ -14,7 +15,7 @@ namespace EVOptimization
                 return;
             }
 
-            // Time slots (5 mins in a 24-hour period)
+            // Time slots (24-hour period)
             int numTimeSlots = 24;
             int[] timeSlots = new int[numTimeSlots];
             for (int h = 0; h<numTimeSlots; h++)

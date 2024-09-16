@@ -10,23 +10,62 @@ namespace CoreLibrary
     {
         // Current charge of the EV in percentage (0 to 100)
         public double CurrentCharge { get; private set; }
-        private readonly double consumptionRatePerMile;
+        public int Id { get; set; }  // EV Identifier
+        public int HouseholdId { get; set; }  // ID of the household that owns the EV
+        public double BatteryCapacity { get; set; }  // in kWh
+        public double SoCMin { get; set; }  // Minimum State of Charge (fraction)
+        public double SoCMax { get; set; }  // Maximum State of Charge (fraction)
+        public double SoCEmergencyLevel { get; set; }  // Desired SoC before outage
+        public bool IsAvailableForDischarge { get; set; }  // User override for upcoming travel
 
         // Constructor to initialize the current charge and consumption rate
-        public EV(double initialCharge, double consumptionRatePerMile)
+        public EV(int id, int householdId, double batteryCapacity, double initialCharge, double chargeEmergencyLevel, bool isAvailableForDischarge)
         {
             if (initialCharge < 0 || initialCharge > 100)
             {
                 throw new ArgumentException("Initial charge must be between 0 and 100.");
             }
-
-            if (consumptionRatePerMile <= 0)
-            {
-                throw new ArgumentException("Consumption rate must be positive.");
-            }
-
+            Id = id;
+            HouseholdId = householdId;
+            BatteryCapacity = batteryCapacity;
+            SoCMax = 100.0;
+            SoCMin = 0;
+            SoCEmergencyLevel = chargeEmergencyLevel;
+            IsAvailableForDischarge = isAvailableForDischarge;
             CurrentCharge = initialCharge;
-            this.consumptionRatePerMile = consumptionRatePerMile;
+        }
+
+        public static List<EV> CreateEVs(List<Household> households)
+        {
+            List<EV> EVs = new List<EV>();
+
+            // EV 1 for Household 1
+            EVs.Add(new EV
+            {
+                Id = 1,
+                HouseholdId = 1,
+                BatteryCapacity = 60.0, // kWh
+                SoCMin = 0.2,
+                SoCMax = 0.9,
+                SoCInitial = 0.5,
+                SoCEmergencyLevel = 0.8,
+                IsAvailableForDischarge = true
+            });
+
+            // EV 2 for Household 2
+            EVs.Add(new EV
+            {
+                Id = 2,
+                HouseholdId = 2,
+                BatteryCapacity = 50.0, // kWh
+                SoCMin = 0.2,
+                SoCMax = 0.9,
+                SoCInitial = 0.6,
+                SoCEmergencyLevel = 0.7,
+                IsAvailableForDischarge = false // User override
+            });
+
+            return EVs;
         }
 
         // Method to charge the EV, increments the charge by the given amount
