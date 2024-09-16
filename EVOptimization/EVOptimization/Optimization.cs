@@ -6,7 +6,7 @@ namespace EVOptimization;
 
 public static class Optimization
 {
-    public OptimizationResult SolveOptimization(Solver solver, int numTimeSlots, List<Household> households, List<EV> EVs,
+    public static OptimizationResult SolveOptimization(Solver solver, int numTimeSlots, List<Household> households, List<EV> EVs,
         List<Appliance> appliances, double[] P_price, Outage outageInfo)
     {
         // Battery degradation cost ($ per kWh)
@@ -200,9 +200,6 @@ public static class Optimization
             // Add constraint that peak power P_peak must be greater than or equal to the sum of total EV charging and household power at each time slot
             solver.Add(P_peak >= P_EV[h] + totalHouseholdPower);
         }
-
-
-
 
         // Objective function
         // Weights for the multi-objective optimization
