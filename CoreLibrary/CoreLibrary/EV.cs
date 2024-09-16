@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CoreLibrary
@@ -11,6 +8,10 @@ namespace CoreLibrary
         // Current charge of the EV in percentage (0 to 100)
         public double CurrentCharge { get; private set; }
         private readonly double consumptionRatePerMile;
+
+        // Flags to track if charging or discharging is active
+        private bool isCharging;
+        private bool isDischarging;
 
         // Constructor to initialize the current charge and consumption rate
         public EV(double initialCharge, double consumptionRatePerMile)
@@ -27,6 +28,8 @@ namespace CoreLibrary
 
             CurrentCharge = initialCharge;
             this.consumptionRatePerMile = consumptionRatePerMile;
+            isCharging = false;
+            isDischarging = false;
         }
 
         // Method to charge the EV, increments the charge by the given amount
@@ -61,23 +64,23 @@ namespace CoreLibrary
             }
         }
 
-        // Method to send charge to another component in the home grid
-        public void SendChargeTo(double amount, Appliance component)
+        // Override method to stop the current operation (charging or discharging)
+        public void StopCurrentOperation()
         {
-            if (amount < 0)
+            if (isCharging)
             {
-                throw new ArgumentException("Amount to send cannot be negative.");
+                isCharging = false;
+                Console.WriteLine("Charging operation stopped.");
             }
-
-            if (CurrentCharge < amount)
+            else if (isDischarging)
             {
-                throw new InvalidOperationException("Not enough charge to send.");
+                isDischarging = false;
+                Console.WriteLine("Discharging operation stopped.");
             }
-
-            CurrentCharge -= amount;
-            component.ReceiveCharge(amount);
-
-            Console.WriteLine($"Sent {amount}% charge to {component.Name}. Remaining charge: {CurrentCharge}%.");
+            else
+            {
+                Console.WriteLine("No operation to stop.");
+            }
         }
 
         // Method to charge the EV over time asynchronously
@@ -88,11 +91,12 @@ namespace CoreLibrary
                 throw new ArgumentException("Charge amount cannot be negative.");
             }
 
+            isCharging = true; // Mark that charging is in progress
             double chargeIncrement = chargeRatePerSecond * timeIntervalInSeconds;
             double chargeToAdd = 0;
             string status = "";
 
-            while (chargeToAdd < totalChargeAmount && CurrentCharge < 100)
+            while (chargeToAdd < totalChargeAmount && CurrentCharge < 100 && isCharging)
             {
                 await Task.Delay(timeIntervalInSeconds * 1000); // Wait for the specified interval
                 chargeToAdd += chargeIncrement;
@@ -107,9 +111,11 @@ namespace CoreLibrary
                 }
             }
 
-            if (CurrentCharge < 100)
+            isCharging = false; // Charging complete or stopped
+
+            if (CurrentCharge < 100 && !isCharging)
             {
-                status = "Charging completed.";
+                status = "Charging stopped.";
             }
 
             return status;
@@ -123,11 +129,12 @@ namespace CoreLibrary
                 throw new ArgumentException("Discharge amount cannot be negative.");
             }
 
+            isDischarging = true; // Mark that discharging is in progress
             double dischargeIncrement = dischargeRatePerSecond * timeIntervalInSeconds;
             double dischargeToSubtract = 0;
             string status = "";
 
-            while (dischargeToSubtract < totalDischargeAmount && CurrentCharge > 0)
+            while (dischargeToSubtract < totalDischargeAmount && CurrentCharge > 0 && isDischarging)
             {
                 await Task.Delay(timeIntervalInSeconds * 1000); // Wait for the specified interval
                 dischargeToSubtract += dischargeIncrement;
@@ -142,9 +149,11 @@ namespace CoreLibrary
                 }
             }
 
-            if (CurrentCharge > 0)
+            isDischarging = false; // Discharging complete or stopped
+
+            if (CurrentCharge > 0 && !isDischarging)
             {
-                status = "Discharging completed.";
+                status = "Discharging stopped.";
             }
 
             return status;
@@ -176,7 +185,5 @@ namespace CoreLibrary
         {
             return CurrentCharge.ToString();
         }
-
-
     }
 }
