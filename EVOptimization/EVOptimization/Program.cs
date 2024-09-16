@@ -45,7 +45,7 @@ namespace EVOptimization
             List<Household> households = Household.CreateHouseholds();
             List<EV> EVs = new()
             {
-                new(id: 1, householdId: 1, batteryCapacity:50, initialCharge:60 * 0.01, chargeEmergencyLevel: 0.8, isAvailableForDischarge:true),  
+                new(id: 1, householdId: 1, batteryCapacity:50, initialCharge:60 * 0.01, chargeEmergencyLevel: 0.6, isAvailableForDischarge:true),  
                 new(id: 2, householdId: 2, 30, 70 * 0.01, 0.75, true)   
             };
 
