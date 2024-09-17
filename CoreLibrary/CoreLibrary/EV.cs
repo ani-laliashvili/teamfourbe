@@ -134,7 +134,7 @@ namespace CoreLibrary
         // Optional: Method to return the current charge
         public double GetCurrentChargeInPercentage()
         {
-            return (CurrentCharge * 100 / BatteryCapacity);
+            return CurrentCharge * 100;
         }
     }
 }

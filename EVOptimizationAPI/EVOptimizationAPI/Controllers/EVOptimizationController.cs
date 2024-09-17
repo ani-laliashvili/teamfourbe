@@ -35,10 +35,19 @@ namespace EVOptimizationAPI.Controllers
             {
                 // Get the StateOfCharge list for the current EV
                 var stateOfChargeList = evResult.GetStateOfChargeList();
+                var currentCharge = 60;
+                // Insert the current charge at the start of stateOfChargeList
+                stateOfChargeList.Insert(0, currentCharge);
+
+                // Remove the last element of the stateOfChargeList to keep the count the same
+                if (stateOfChargeList.Count > 24)
+                {
+                    stateOfChargeList.RemoveAt(stateOfChargeList.Count - 1);
+                }
 
                 // Get the combined power series for the current EV
                 var combinedPowerSeries = evResult.GetCombinedPowerSeries();
-
+                
                 // Create a result DTO for this EV
                 var result = new OptimizationResultDto
                 {
@@ -68,8 +77,8 @@ namespace EVOptimizationAPI.Controllers
             List<Household> households = Household.CreateHouseholds();
             List<EV> EVs = new()
             {
-                new(id: 1, householdId: 1, batteryCapacity:50, initialCharge: GenerateNormalDistribution(60, 30) * 0.01, chargeEmergencyLevel: 0.6, isAvailableForDischarge:true),
-                new(id: 2, householdId: 2, 30, GenerateNormalDistribution(60, 30) * 0.01, 0.75, true)
+                new(id: 1, householdId: 1, batteryCapacity:50, initialCharge: 60 * 0.01, chargeEmergencyLevel: 0.6, isAvailableForDischarge:true),
+                new(id: 2, householdId: 2, batteryCapacity:30, initialCharge:30 * 0.01, chargeEmergencyLevel:0.75, isAvailableForDischarge:true)
             };
 
             List<Appliance> appliances = new()
