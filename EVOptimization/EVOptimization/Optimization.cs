@@ -282,7 +282,8 @@ public static class Optimization
         else
         {
             // Handle the case where no optimal solution is found if necessary
-            throw new Exception("No optimal solution found.");
+            return null;
+            //throw new Exception("No optimal solution found.");
         }
 
         return optimizationResult;

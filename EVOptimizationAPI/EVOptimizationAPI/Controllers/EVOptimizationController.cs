@@ -25,6 +25,8 @@ namespace EVOptimizationAPI.Controllers
             Solver solver = Solver.CreateSolver("CBC_MIXED_INTEGER_PROGRAMMING");
             InitializationData data = Initialize();
             var results = Optimization.SolveOptimization(solver, data.NumTimeSlots, data.Households, data.EVs, data.Appliances, data.P_Price, data.Outage);
+            if (results == null)
+                return BadRequest();
 
             var optimizationResults = new List<OptimizationResultDto>();
 
@@ -93,18 +95,24 @@ namespace EVOptimizationAPI.Controllers
                 Outage = outage
             };
         }
-        
+
         // Method to generate a random number from a normal (Gaussian) distribution
         public static double GenerateNormalDistribution(double mean, double stddev)
-        { 
+        {
             Random random = new Random();
-            double u1 = 1.0 - random.NextDouble(); // uniform(0,1] random doubles
-            double u2 = 1.0 - random.NextDouble();
-            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); // random normal(0,1)
-            double randNormal = mean + stddev * randStdNormal; // random normal(mean,stdDev)
+            double randNormal;
+
+            do
+            {
+                double u1 = 1.0 - random.NextDouble(); // uniform(0,1] random doubles
+                double u2 = 1.0 - random.NextDouble();
+                double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); // random normal(0,1)
+                randNormal = mean + stddev * randStdNormal; // random normal(mean,stdDev)
+            }
+            while (randNormal < 0); // Repeat until non-negative value is found
+
             return randNormal;
         }
-        
 
         [HttpGet("mock-optimization")]
         public ActionResult<OptimizationResultDto> GetMockOptimization()

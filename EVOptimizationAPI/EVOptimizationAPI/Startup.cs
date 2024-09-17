@@ -25,12 +25,26 @@ namespace EVOptimizationAPI
             // Register services needed by the app
             services.AddControllers(); // Add support for MVC controllers
 
-            // Example of adding a singleton service, e.g., for managing EV data
+            // CORS configuration to allow requests from the React app (localhost:3000)
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowReactApp", builder =>
+                {
+                    builder
+                        .WithOrigins("http://localhost:3000")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
+            // Register services needed by the app
             services.AddSingleton<IEVService, EVService>();
             services.AddTransient<IEVOptimizationService, EVOptimizationService>();
 
-            // Optional: Add API versioning, Swagger, etc.
-            services.AddSwaggerGen(); // Enable Swagger for API documentation
+            // Add Swagger for API documentation
+            services.AddSwaggerGen();
+
+            // Optional: Add other services like database, authentication, etc.
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,10 +57,18 @@ namespace EVOptimizationAPI
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "EVOptimizationAPI v1"));
             }
+            else
+            {
+                // Redirect HTTP to HTTPS in production
+                app.UseHttpsRedirection();
+            }
+
+            // Enable CORS for the React app
+            app.UseCors("AllowReactApp");
 
             app.UseRouting();
 
-            // Example of adding global error handling middleware
+            // Global error handling middleware
             app.Use(async (context, next) =>
             {
                 try
@@ -61,8 +83,7 @@ namespace EVOptimizationAPI
                 }
             });
 
-            // Example of using authorization if needed (can be removed if not necessary)
-            app.UseAuthorization();
+            app.UseAuthorization(); // Use if you have authentication/authorization
 
             // Register the endpoints for API controllers
             app.UseEndpoints(endpoints =>
