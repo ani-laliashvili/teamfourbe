@@ -125,7 +125,7 @@ public static class Optimization
             {
                 if (h == 0)
                 {
-                    solver.Add(SoC[(ev.Id, h)] == ev.SoCMin * ev.BatteryCapacity +
+                    solver.Add(SoC[(ev.Id, h)] == ev.CurrentCharge * ev.BatteryCapacity +
                         (P_charge[(ev.Id, h)] * Eff_charge - P_discharge[(ev.Id, h)] / Eff_discharge) * delta_t);
                 }
                 else
