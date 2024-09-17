@@ -26,7 +26,6 @@ namespace EVOptimizationAPI.Controllers
             InitializationData data = Initialize();
             var results = Optimization.SolveOptimization(solver, data.NumTimeSlots, data.Households, data.EVs, data.Appliances, data.P_Price, data.Outage);
 
-            // Initialize a list to hold the result DTOs for each EV
             var optimizationResults = new List<OptimizationResultDto>();
 
             // Iterate through each EVResult in the results
@@ -67,8 +66,8 @@ namespace EVOptimizationAPI.Controllers
             List<Household> households = Household.CreateHouseholds();
             List<EV> EVs = new()
             {
-                new(id: 1, householdId: 1, batteryCapacity:50, initialCharge:60 * 0.01, chargeEmergencyLevel: 0.6, isAvailableForDischarge:true),
-                new(id: 2, householdId: 2, 30, 70 * 0.01, 0.75, true)
+                new(id: 1, householdId: 1, batteryCapacity:50, initialCharge: GenerateNormalDistribution(60, 30) * 0.01, chargeEmergencyLevel: 0.6, isAvailableForDischarge:true),
+                new(id: 2, householdId: 2, 30, GenerateNormalDistribution(60, 30) * 0.01, 0.75, true)
             };
 
             List<Appliance> appliances = new()
@@ -94,6 +93,18 @@ namespace EVOptimizationAPI.Controllers
                 Outage = outage
             };
         }
+        
+        // Method to generate a random number from a normal (Gaussian) distribution
+        public static double GenerateNormalDistribution(double mean, double stddev)
+        { 
+            Random random = new Random();
+            double u1 = 1.0 - random.NextDouble(); // uniform(0,1] random doubles
+            double u2 = 1.0 - random.NextDouble();
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); // random normal(0,1)
+            double randNormal = mean + stddev * randStdNormal; // random normal(mean,stdDev)
+            return randNormal;
+        }
+        
 
         [HttpGet("mock-optimization")]
         public ActionResult<OptimizationResultDto> GetMockOptimization()
