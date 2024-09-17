@@ -79,7 +79,7 @@ namespace EVOptimizationAPI.Controllers
                 new(3, "HVAC", 2.0, false)    // kW
             };
 
-            Outage outage = new(4, 5, "");
+            Outage outage = new(12, 15, "");
 
             // Electricity price forecast (prices in $ per kWh)
             double[] P_price = PriceForecast.CreatePriceForecast(numTimeSlots);
